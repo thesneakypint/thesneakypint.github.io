@@ -19,16 +19,30 @@
         <p>Inspired by Skilldrick</p>
       </header>
       <section>
-        <h1>GitHub Flavored Markdown</h1>
-
+        <h1>Day 1</h1>
+   
+        <p>Stumbled on this awesome javascript 6502 assembler/emulator and starter tutorial by <a href="http://github.com/skilldrick">skilldrick</a></p>
         
-        <p>What about some code <strong>in</strong> a list? That's insane, right?</p>
-
         <ol>
           <li>
-            <p>In Ruby you can map like this:</p>
+            <p>This is my journey - from scratch ...</p>
+            <p>Draw a line on 32x32 display. Emulator provides a 32x32 pixel display. Display memory starts at $0200.</p>
+      
+            <pre><code>
+LDA #$02
+STA $00 ; display address MSB
 
-            <pre><code>['a', 'b'].map { |x| x.uppercase }</code></pre>
+LDA #$00
+STA $01 ; display address LSB
+
+LDA #$01 ; color = 1 (white)
+
+drawline
+STA ($00),Y
+INY
+CPY #$20
+BNE drawline
+</code></pre>
           </li>
           <li>
             <p>In Rails, you can do a shortcut:</p>
@@ -38,7 +52,7 @@
         </ol>
       </section>
       <footer>
-        <p>This project is maintained by <a href="http://github.com/orderedlist">Steve Smith</a></p>
+        <p>This project is maintained by <a href="http://github.com/thesneakypint">Graham McLeod</a></p>
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
