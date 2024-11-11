@@ -193,3 +193,10 @@ footer {
     color:#444;
   }
 }
+
+iframe {
+  height: 600px;
+  width: 1200px;
+  resize: both;
+  overflow: auto;
+}
