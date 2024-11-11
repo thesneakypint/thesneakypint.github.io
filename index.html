@@ -23,7 +23,8 @@
     
         <ul>
           <li><a href="#Project1">The Green Man</a></li>
-          <li><a href="#Project2">Links</a></li>
+          <li><a href="#Project2">The Wall</a></li>
+          <li><a href="#Project99">Links</a></li>
         </ul>
       </header>
       <section>
@@ -454,9 +455,259 @@ $f: Light grey
 </div>
 </section>
 
+ <h2 id="Project2">The Wall</h2>
+
+<p>Quick and dirty wall background</p>
+
+<div class="widget">
+  <div class="buttons">
+    <input type="button" value="Assemble" class="assembleButton" />
+    <input type="button" value="Run" class="runButton" />
+    <input type="button" value="Reset" class="resetButton" />
+    <input type="button" value="Hexdump" class="hexdumpButton" />
+    <input type="button" value="Disassemble" class="disassembleButton" />
+    <input type="button" value="Notes" class="notesButton" />
+  </div>
+
+  <textarea class="code">
+
+; *******************************************
+; SneakyPint 6502 assembly coding 101
+
+; "The Wall"
+
+; Rev 1.0 
+; 10Nov2024
+; *******************************************
+
+; CONSTANTS
+; =========
+
+;Color for erasing screen
+;Note: Thing colors are defined in datatable at end of program
+define black       $0
+
+;Thing size
+define thingLength $8 
+define thingHeight $8 
+
+
+; VARIABLES
+; =========
+
+;Pointers (for indirect addressing)
+define dotLocL         $00 ; display pixel pointer 
+define dotLocH         $01 ; 
+define thingSpriteL    $02 ; Sprite image pointer
+define thingSpriteH    $03
+
+
+;MAIN LOOP
+;==========
+
+lda #$00
+sta dotLocL
+lda #$02
+sta dotLocH
+jsr drawThing
+
+lda #$08
+sta dotLocL
+lda #$02
+sta dotLocH
+jsr drawThing
+
+lda #$10
+sta dotLocL
+lda #$02
+sta dotLocH
+jsr drawThing
+
+lda #$18
+sta dotLocL
+lda #$02
+sta dotLocH
+jsr drawThing
+
+lda #$00
+sta dotLocL
+lda #$03
+sta dotLocH
+jsr drawThing
+
+lda #$08
+sta dotLocL
+lda #$03
+sta dotLocH
+jsr drawThing
+
+lda #$10
+sta dotLocL
+lda #$03
+sta dotLocH
+jsr drawThing
+
+lda #$18
+sta dotLocL
+lda #$03
+sta dotLocH
+jsr drawThing
+
+lda #$00
+sta dotLocL
+lda #$04
+sta dotLocH
+jsr drawThing
+
+lda #$08
+sta dotLocL
+lda #$04
+sta dotLocH
+jsr drawThing
+
+lda #$10
+sta dotLocL
+lda #$04
+sta dotLocH
+jsr drawThing
+
+lda #$18
+sta dotLocL
+lda #$04
+sta dotLocH
+jsr drawThing
+
+lda #$00
+sta dotLocL
+lda #$05
+sta dotLocH
+jsr drawThing
+
+lda #$08
+sta dotLocL
+lda #$05
+sta dotLocH
+jsr drawThing
+
+lda #$10
+sta dotLocL
+lda #$05
+sta dotLocH
+jsr drawThing
+
+lda #$18
+sta dotLocL
+lda #$05
+sta dotLocH
+jsr drawThing
+BRK
+
+
+;MAIN SUBROUTINES 
+;================
+
+
+;*************************************************
+; Draw Thing at new location
+
+drawThing: 
+
+LDX #$0 ; Reset counter for current Thing dot
+LDY #$0 ; Reset counter for drawing Thing columns 
+LDA #$0 ; Reset counter for drawing Thing rows
+STA thingRow
+
+
+drawDot:     ; map Thing to screen from Sprite image
+  LDA thingSprite,X 
+  STA (dotLocL),Y
+  INX
+  INY
+  CPY #thingLength
+  BNE drawDot
+LDY #$0
+CLC
+lda dotLocL
+and #$E0 ; check if Thing on last row of current band 
+cmp #$E0
+bne downdwn ; if not last row then ok to advance 1 row 
+inc dotLocH  ; advance to next band
+downdwn:    ; advance one row
+lda dotLocL
+clc
+adc #$20
+sta dotLocL
+INC thingRow
+LDA thingRow
+CMP #thingHeight
+BNE drawDot
+rts
+
+thingSprite: 
+
+;Sprite = Brick Wall
+DCB  11,11,11,15,11,11,11,11,11,11,11,15,11,11,11,11,11,11,11,15,11,11,11,11,15,15,15,11,15,15,15,11,11,11,11,11,11,11,11,15,11,11,11,11,11,11,11,15,11,11,11,11,11,11,11,15,15,15,15,15,15,15,15,11
+
+  </textarea>
+
+  <canvas class="screen" width="160" height="160"></canvas>
+
+  <div class="debugger">
+    <input type="checkbox" class="debug" name="debug" />
+    <label for="debug">Debugger</label>
+    <div class="minidebugger"></div>
+    <div class="buttons">
+      <input type="button" value="Step" class="stepButton" />
+      <input type="button" value="Jump to..." class="gotoButton" />
+    </div>
+  </div>
+
+  <div class="monitorControls">
+    <label for="monitoring">Monitor</label>
+    <input type="checkbox" class="monitoring" name="monitoring" />
+
+    <label for="start">Start: $</label>
+    <input type="text" value="0" class="start" name="start" />
+    <label for="length">Length: $</label>
+    <input type="text" value="ff" class="length" name="length" />
+  </div>
+
+  <div class="monitor"><pre><code></code></pre></div>
+  <div class="messages"><pre><code></code></pre></div>
+
+  <div class="notes" style="display: none">Notes:
+
+Memory location $fe contains a new random byte on every instruction.
+Memory location $ff contains the ascii code of the last key pressed.
+
+Memory locations $200 to $5ff map to the screen pixels. Different values will
+draw different colour pixels. The colours are:
+
+$0: Black
+$1: White
+$2: Red
+$3: Cyan
+$4: Purple
+$5: Green
+$6: Blue
+$7: Yellow
+$8: Orange
+$9: Brown
+$a: Light red
+$b: Dark grey
+$c: Grey
+$d: Light green
+$e: Light blue
+$f: Light grey
+    </div>
+</div>
+</section>
+
+
+      
 <section>
 
-        <h2 id="Project2">Links</h2>
+        <h2 id="Project99">Links</h2>
         <p><a href="https://jsfiddle.net/xpeLja5t/">JSFiddle</a></p>
   
 </section>
